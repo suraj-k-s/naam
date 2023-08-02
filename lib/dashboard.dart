@@ -12,6 +12,7 @@ class DashBoard extends StatefulWidget {
 class _DashBoardState extends State<DashBoard> {
   List<String> dropdownItems = [];
   String? selectedDropdownItem;
+  List<List<String>> alumniData = [];
 
   @override
   void initState() {
@@ -21,13 +22,16 @@ class _DashBoardState extends State<DashBoard> {
 
   Future<void> fetchData() async {
     try {
-      List<String> batchData = await SheetApi.fetchBatchData();
-      print("Hai");
-      print(batchData);
+      List<List<String>> data = await SheetApi.fetchAlumniData();
+      List<String> extractedItems = [];
+      for (int i = 1; i < data.length; i++) {
+        String batchValue = data[i][5];
+        if (!extractedItems.contains(batchValue)) {
+          extractedItems.add(batchValue);
+        }
+      }
       setState(() {
-        dropdownItems = batchData;
-        selectedDropdownItem =
-            dropdownItems.isNotEmpty ? dropdownItems[0] : null;
+        dropdownItems = extractedItems;
       });
     } catch (e) {
       print('Error fetching data: $e');

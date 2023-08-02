@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:naam/sheet_api.dart';
+import 'package:naam/viewmore.dart';
 
 class ListAlumni extends StatefulWidget {
   final String? selectedValue;
@@ -22,9 +23,13 @@ class _ListAlumniState extends State<ListAlumni> {
   Future<void> fetchData() async {
     try {
       List<List<String>> data = await SheetApi.fetchAlumniData();
-      setState(() {
+      if (widget.selectedValue != null) {
+        alumniData =
+            data.where((row) => row[5] == widget.selectedValue).toList();
+      } else {
         alumniData = data;
-      });
+      }
+      setState(() {});
     } catch (e) {
       print('Error fetching data: $e');
     }
@@ -60,11 +65,19 @@ class _ListAlumniState extends State<ListAlumni> {
                   return ListTile(
                     title: Text(
                       getValueOrNA(rowData[1]),
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold), 
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    subtitle: Text(getValueOrNA(rowData[5])), 
-                    trailing: Text(getValueOrNA(rowData[3])), 
+                    subtitle: Text(getValueOrNA(rowData[5])),
+                    trailing: Text(getValueOrNA(rowData[3])),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              AlumniDetailsPage(alumniDetails: rowData),
+                        ),
+                      );
+                    },
                   );
                 },
               ),
